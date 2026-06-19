@@ -2,14 +2,25 @@
 let staffData = [];
 let shiftData = [];
 const today = new Date();
-let currentYear = today.getFullYear();
-let currentMonth = today.getMonth(); // 0-indexed
-let cycleType = 'cycle'; // always 21-20 cycle
 let selectedDept = 'ALL';
 let searchQuery = '';
 let activeEditStaffId = null;
 let usersData = [];
 let activeEditUserId = null;
+
+// Custom date range state
+let customStartDate = null;
+let customEndDate = null;
+
+// Helper: default to 21st of last month → 20th of this month
+function getDefaultDateRange() {
+  const now = new Date();
+  const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+  const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+  const start = new Date(prevYear, prevMonth, 21);
+  const end = new Date(now.getFullYear(), now.getMonth(), 20);
+  return { start, end };
+}
 
 // Lao Months and Weekdays Names
 const MONTH_NAMES_LAO = [
@@ -31,8 +42,9 @@ const DEPT_TRANSLATIONS = {
 };
 
 // --- DOM ELEMENTS ---
-const selectMonth = document.getElementById('select-month');
-const selectYear = document.getElementById('select-year');
+const dateStartInput = document.getElementById('date-start-input');
+const dateEndInput = document.getElementById('date-end-input');
+const applyDateRangeBtn = document.getElementById('apply-date-range-btn');
 const searchStaffInput = document.getElementById('search-staff-input');
 const filterDeptSelect = document.getElementById('filter-dept-select');
 const printRosterBtn = document.getElementById('print-roster-btn');
@@ -73,7 +85,7 @@ const staffListTbody = document.getElementById('staff-list-tbody');
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
-  setupYearMonthSelectors();
+  setupDateRangeDefaults();
   initTheme();
   setupEventListeners();
   // Wait for auth to be ready before loading data
@@ -109,44 +121,41 @@ function applyAuthUI() {
   const manageUsersBtn = document.getElementById('open-users-modal-btn');
   const deptFilterContainer = filterDeptSelect ? filterDeptSelect.closest('.control-item') : null;
 
+  const isDataEntry = auth.profile.role === 'data_entry';
+
   if (auth.isAdmin) {
     emailLabel.textContent = 'ຜູ້ດູແລລະບົບ (Admin)';
     roleBadge.textContent = 'admin';
-    roleBadge.classList.remove('dept');
+    roleBadge.className = 'user-role-badge';
     if (manageStaffBtn) manageStaffBtn.style.display = '';
     if (manageUsersBtn) manageUsersBtn.style.display = '';
+    if (deptFilterContainer) deptFilterContainer.style.display = '';
+  } else if (isDataEntry) {
+    emailLabel.textContent = 'ຜູ້ປ້ອນຂໍ້ມູນ (Data Entry)';
+    roleBadge.textContent = 'Data Entry';
+    roleBadge.className = 'user-role-badge data-entry';
+    if (manageStaffBtn) manageStaffBtn.style.display = '';
+    if (manageUsersBtn) manageUsersBtn.style.display = 'none';
     if (deptFilterContainer) deptFilterContainer.style.display = '';
   } else {
     const deptName = auth.profile.department || 'ພະແນກ';
     const deptLao = DEPT_TRANSLATIONS[deptName] || deptName;
     emailLabel.textContent = `ພະແນກ: ${deptLao}`;
     roleBadge.textContent = deptLao;
-    roleBadge.classList.add('dept');
+    roleBadge.className = 'user-role-badge dept';
     if (manageStaffBtn) manageStaffBtn.style.display = '';
     if (manageUsersBtn) manageUsersBtn.style.display = 'none';
     if (deptFilterContainer) deptFilterContainer.style.display = 'none';
   }
 }
 
-// Setup Year and Month Dropdowns
-function setupYearMonthSelectors() {
-  // Populate Months
-  MONTH_NAMES_LAO.forEach((name, index) => {
-    const option = document.createElement('option');
-    option.value = index;
-    option.textContent = name;
-    if (index === currentMonth) option.selected = true;
-    selectMonth.appendChild(option);
-  });
-
-  // Populate Years (2020 to 2030)
-  for (let y = 2020; y <= 2030; y++) {
-    const option = document.createElement('option');
-    option.value = y;
-    option.textContent = y;
-    if (y === currentYear) option.selected = true;
-    selectYear.appendChild(option);
-  }
+// Setup Date Range Inputs with defaults
+function setupDateRangeDefaults() {
+  const { start, end } = getDefaultDateRange();
+  customStartDate = start;
+  customEndDate = end;
+  if (dateStartInput) dateStartInput.value = formatDateISO(start);
+  if (dateEndInput) dateEndInput.value = formatDateISO(end);
 }
 
 // Setup Theme (Dark/Light)
@@ -175,14 +184,32 @@ function toggleTheme() {
 
 // --- EVENT LISTENERS ---
 function setupEventListeners() {
-  // Date Filters
-  selectMonth.addEventListener('change', (e) => {
-    currentMonth = parseInt(e.target.value);
-    loadData();
-  });
-  selectYear.addEventListener('change', (e) => {
-    currentYear = parseInt(e.target.value);
-    loadData();
+  // Date Range Apply Button
+  if (applyDateRangeBtn) {
+    applyDateRangeBtn.addEventListener('click', () => {
+      const startVal = dateStartInput ? dateStartInput.value : '';
+      const endVal = dateEndInput ? dateEndInput.value : '';
+      if (!startVal || !endVal) {
+        alert('ກະລຸນາເລືອກວັນທີເລີ່ມ ແລະ ວັນທີສິ້ນສຸດ');
+        return;
+      }
+      if (startVal > endVal) {
+        alert('ວັນທີເລີ່ມຕ້ອງບໍ່ຫຼາຍກວ່າວັນທີສິ້ນສຸດ');
+        return;
+      }
+      const [sy, sm, sd] = startVal.split('-').map(Number);
+      const [ey, em, ed] = endVal.split('-').map(Number);
+      customStartDate = new Date(sy, sm - 1, sd);
+      customEndDate = new Date(ey, em - 1, ed);
+      loadData();
+    });
+  }
+
+  // Also load when pressing Enter on date inputs
+  [dateStartInput, dateEndInput].forEach(inp => {
+    if (inp) inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') applyDateRangeBtn && applyDateRangeBtn.click();
+    });
   });
 
   // Search & Filter
@@ -247,6 +274,248 @@ function setupEventListeners() {
 
   // Theme Toggle
   themeToggleBtn.addEventListener('click', toggleTheme);
+
+  // Excel Import Setup
+  setupExcelImport();
+}
+
+function setupExcelImport() {
+  const excelFileInput = document.getElementById('excel-file-input');
+  const importExcelBtn = document.getElementById('import-excel-btn');
+  const excelPreviewWrapper = document.getElementById('excel-preview-wrapper');
+  const excelPreviewTbody = document.getElementById('excel-preview-tbody');
+  const confirmImportBtn = document.getElementById('confirm-import-btn');
+  const cancelImportBtn = document.getElementById('cancel-import-btn');
+
+  if (!importExcelBtn || !excelFileInput) return;
+
+  const LAO_TO_ENG_DEPT = {
+    // Lao
+    'ການຢາ': 'Pharmacy',
+    'ພະຍາບານ': 'Nurse',
+    'ພາຍໃນ': 'Internal medicine',
+    'ເດັກນ້ອຍ': 'Pediatric Department',
+    'ວິເຄາະ': 'Laboratory Department',
+    'ໂຊເຟີ': 'Chauffeur',
+    
+    // Thai
+    'ห้องยา': 'Pharmacy',
+    'การยา': 'Pharmacy',
+    'เภสัช': 'Pharmacy',
+    'พยาบาล': 'Nurse',
+    'อายุรกรรม': 'Internal medicine',
+    'แผนกภายใน': 'Internal medicine',
+    'กุมารเวช': 'Pediatric Department',
+    'แผนกเด็ก': 'Pediatric Department',
+    'เด็กน้อย': 'Pediatric Department',
+    'แล็บ': 'Laboratory Department',
+    'ห้องแล็บ': 'Laboratory Department',
+    'เทคนิคการแพทย์': 'Laboratory Department',
+    'คนขับรถ': 'Chauffeur',
+    'โชเฟอร์': 'Chauffeur',
+    'ขับรถ': 'Chauffeur',
+
+    // English
+    'pharmacy': 'Pharmacy',
+    'nurse': 'Nurse',
+    'internal medicine': 'Internal medicine',
+    'pediatric department': 'Pediatric Department',
+    'pediatric': 'Pediatric Department',
+    'laboratory department': 'Laboratory Department',
+    'laboratory': 'Laboratory Department',
+    'lab': 'Laboratory Department',
+    'chauffeur': 'Chauffeur',
+    'driver': 'Chauffeur'
+  };
+
+  let pendingImportRows = [];
+
+  importExcelBtn.addEventListener('click', () => {
+    excelFileInput.click();
+  });
+
+  excelFileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        // Find the first row that actually contains some content to use as headers
+        let headerRowIdx = -1;
+        for (let i = 0; i < jsonData.length; i++) {
+          if (jsonData[i] && jsonData[i].length > 0 && jsonData[i].some(cell => cell !== null && cell !== undefined && String(cell).trim() !== '')) {
+            headerRowIdx = i;
+            break;
+          }
+        }
+
+        if (headerRowIdx === -1 || jsonData.length <= headerRowIdx + 1) {
+          alert('ບໍ່ພົບຂໍ້ມູນໃນໄຟລ໌ Excel ທີ່ເລືອກ');
+          excelFileInput.value = '';
+          return;
+        }
+
+        const headers = jsonData[headerRowIdx].map(h => String(h || '').trim().toLowerCase());
+        
+        // Find column indices with Thai/Lao/English fuzzy matching
+        let nameIdx = headers.findIndex(h => h.includes('name') || h.includes('ຊື່') || h.includes('ชื่อ') || h.includes('ພະນັກງານ') || h.includes('พนักงาน') || h.includes('fullname') || h.includes('full name') || h.includes('staff') || h.includes('employee'));
+        let deptIdx = headers.findIndex(h => h.includes('dept') || h.includes('department') || h.includes('ພະແນກ') || h.includes('แผนก') || h.includes('ตำแหน่ง') || h.includes('ຕຳແໜ່ງ') || h.includes('role') || h.includes('position'));
+        let rateIdx = headers.findIndex(h => h.includes('rate') || h.includes('ຄ່າຈ້າງ') || h.includes('ຄ່າເວນ') || h.includes('ค่าจ้าง') || h.includes('ค่าเวน') || h.includes('ເງິນ') || h.includes('เงิน') || h.includes('salary') || h.includes('wage') || h.includes('pay'));
+        let notesIdx = headers.findIndex(h => h.includes('note') || h.includes('remark') || h.includes('comment') || h.includes('ໝາຍ') || h.includes('ຫມາຍ') || h.includes('หมาย') || h.includes('ອື່ນ') || h.includes('อื่น') || h.includes('ລາຍລະອຽດ') || h.includes('รายละเอียด') || h.includes('desc'));
+
+        // Fallback: If no notes header matches, check if there's a 4th column (index 3) containing data in any of the rows
+        if (notesIdx === -1) {
+          let hasFourthColumnData = false;
+          for (let i = headerRowIdx + 1; i < jsonData.length; i++) {
+            if (jsonData[i] && jsonData[i].length > 3 && jsonData[i][3] !== undefined && String(jsonData[i][3]).trim() !== '') {
+              hasFourthColumnData = true;
+              break;
+            }
+          }
+          if (hasFourthColumnData) {
+            notesIdx = 3;
+          }
+        }
+
+        if (nameIdx === -1 || deptIdx === -1 || rateIdx === -1) {
+          alert('ໄຟລ໌ Excel ຕ້ອງມີຫົວຂໍ້ຖັນ: "ຊື່" (Name), "ພະແນກ" (Department), ແລະ "ຄ່າຈ້າງ" (Rate)');
+          excelFileInput.value = '';
+          return;
+        }
+
+        pendingImportRows = [];
+        for (let i = headerRowIdx + 1; i < jsonData.length; i++) {
+          const row = jsonData[i];
+          if (!row || row.length === 0) continue;
+
+          const name = String(row[nameIdx] || '').trim();
+          const rawDept = String(row[deptIdx] || '').trim();
+          const rate = parseFloat(row[rateIdx]) || 0;
+          const notes = (notesIdx !== -1 && row[notesIdx] !== undefined && row[notesIdx] !== null) ? String(row[notesIdx]).trim() : '';
+
+          if (!name) continue;
+
+          // Resolve department key using robust matching
+          let resolvedDept = '';
+          const cleanDept = rawDept.replace(/ພະແນກ|แผนก/g, '').trim().toLowerCase();
+          
+          if (cleanDept) {
+            // 1. Try exact match
+            for (const [laoKey, engValue] of Object.entries(LAO_TO_ENG_DEPT)) {
+              const cleanKey = laoKey.toLowerCase().replace(/ພະແນກ|แผนก/g, '').trim();
+              if (cleanDept === cleanKey) {
+                resolvedDept = engValue;
+                break;
+              }
+            }
+            // 2. Try substring match if no exact match
+            if (!resolvedDept) {
+              for (const [laoKey, engValue] of Object.entries(LAO_TO_ENG_DEPT)) {
+                const cleanKey = laoKey.toLowerCase().replace(/ພະແນກ|แผนก/g, '').trim();
+                if (cleanDept.includes(cleanKey) || cleanKey.includes(cleanDept)) {
+                  resolvedDept = engValue;
+                  break;
+                }
+              }
+            }
+          }
+          if (!resolvedDept) {
+            resolvedDept = 'Pharmacy'; // Default fallback
+          }
+
+          pendingImportRows.push({
+            name,
+            department: resolvedDept,
+            rate_per_shift: rate,
+            notes: notes
+          });
+        }
+
+        if (pendingImportRows.length === 0) {
+          alert('ບໍ່ມີຂໍ້ມູນພະນັກງານທີ່ຖືກຕ້ອງໃນໄຟລ໌ Excel');
+          excelFileInput.value = '';
+          return;
+        }
+
+        // Render preview
+        let previewHtml = '';
+        pendingImportRows.forEach(row => {
+          const deptLao = DEPT_TRANSLATIONS[row.department] || row.department;
+          previewHtml += `
+            <tr>
+              <td><strong>${row.name}</strong></td>
+              <td><span class="status-badge" style="background: rgba(255,255,255,0.04); border-color: var(--border-color);">${deptLao}</span></td>
+              <td style="font-family: var(--font-title); font-weight: 600;">${formatCurrency(row.rate_per_shift)} ₭</td>
+              <td><span style="color: var(--text-muted); font-size: 0.8rem;">${row.notes || '-'}</span></td>
+            </tr>
+          `;
+        });
+
+        excelPreviewTbody.innerHTML = previewHtml;
+        excelPreviewWrapper.style.display = 'block';
+        
+        // Scroll the preview wrapper into view
+        excelPreviewWrapper.scrollIntoView({ behavior: 'smooth' });
+
+      } catch (err) {
+        console.error(err);
+        alert('ເກີດຂໍ້ຜິດພາດໃນການອ່ານໄຟລ໌ Excel');
+        excelFileInput.value = '';
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  // Confirm Import handler
+  confirmImportBtn.addEventListener('click', async () => {
+    if (pendingImportRows.length === 0) return;
+
+    confirmImportBtn.disabled = true;
+    confirmImportBtn.textContent = 'ກຳລັງນຳເຂົ້າ...';
+
+    let successCount = 0;
+    for (const payload of pendingImportRows) {
+      try {
+        const res = await fetch('/api/staff', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          successCount++;
+        }
+      } catch (err) {
+        console.error('Error importing staff:', payload.name, err);
+      }
+    }
+
+    // Reset state and hide preview
+    pendingImportRows = [];
+    excelPreviewTbody.innerHTML = '';
+    excelPreviewWrapper.style.display = 'none';
+    excelFileInput.value = '';
+    confirmImportBtn.disabled = false;
+    confirmImportBtn.innerHTML = '✓ ຢືນຢັນການນຳເຂົ້າ';
+
+    // Reload list
+    await loadData();
+    renderStaffModalList();
+  });
+
+  // Cancel Import handler
+  cancelImportBtn.addEventListener('click', () => {
+    pendingImportRows = [];
+    excelPreviewTbody.innerHTML = '';
+    excelPreviewWrapper.style.display = 'none';
+    excelFileInput.value = '';
+  });
 }
 
 function closeStaffModal() {
@@ -260,9 +529,10 @@ function resetStaffForm() {
   submitStaffBtn.textContent = 'ບັນທຶກຂໍ້ມູນ';
   addStaffForm.querySelector('h3').textContent = '➕ ເພີ່ມບຸກຄະລາກອນໃໝ່';
 
-  // Lock and pre-select department for non-admin department users
+  // Lock and pre-select department for non-admin department users (excluding data_entry)
   const auth = window.AppAuth;
-  if (auth && auth.isReady && !auth.isAdmin && auth.profile && auth.profile.department) {
+  const isDataEntry = auth && auth.profile && auth.profile.role === 'data_entry';
+  if (auth && auth.isReady && !auth.isAdmin && !isDataEntry && auth.profile && auth.profile.department) {
     inputStaffDept.value = auth.profile.department;
     inputStaffDept.disabled = true;
   } else {
@@ -278,10 +548,8 @@ async function loadData() {
     const endDateStr = formatDateISO(dates[dates.length - 1]);
 
     // Update Title text
-    const cycleText = cycleType === 'cycle'
-      ? `ຕາຕະລາງເວນປະຈຳງວດວັນທີ ${dates[0].getDate()} ${MONTH_NAMES_LAO[dates[0].getMonth()]} ${dates[0].getFullYear()} - ${dates[dates.length - 1].getDate()} ${MONTH_NAMES_LAO[dates[dates.length - 1].getMonth()]} ${dates[dates.length - 1].getFullYear()}`
-      : `ຕາຕະລາງເວນປະຈຳເດືອນ ${MONTH_NAMES_LAO[currentMonth]} ${currentYear}`;
-
+    const fmt = (d) => `${d.getDate()} ${MONTH_NAMES_LAO[d.getMonth()]} ${d.getFullYear()}`;
+    const cycleText = `ຕາຕະລາງເວນ: ${fmt(dates[0])} ຫາ ${fmt(dates[dates.length - 1])}`;
     rosterViewTitle.textContent = cycleText;
 
     // Fetch Staff & Shifts parallelly
@@ -297,12 +565,14 @@ async function loadData() {
     staffData = await staffRes.json();
     shiftData = await shiftsRes.json();
 
-    // Filter by department if non-admin
+    // Filter by department if non-admin and not data_entry
     const auth = window.AppAuth;
-    if (auth && auth.isReady && !auth.isAdmin && auth.profile && auth.profile.department) {
+    const isDataEntry = auth && auth.profile && auth.profile.role === 'data_entry';
+    if (auth && auth.isReady && !auth.isAdmin && !isDataEntry && auth.profile && auth.profile.department) {
       const userDept = auth.profile.department;
       staffData = staffData.filter(s => s.department === userDept);
     }
+
 
     // Update status badge
     // try {
@@ -318,8 +588,25 @@ async function loadData() {
     // Render components
     renderRosterGrid();
     renderStats();
+    updatePrintHeader(dates);
   } catch (error) {
     console.error('Error loading data:', error);
+  }
+}
+
+// --- UPDATE PRINT HEADER ---
+function updatePrintHeader(dates) {
+  const dateGenEl = document.getElementById('print-date-generated');
+  const periodEl = document.getElementById('print-period-label');
+
+  if (dateGenEl) {
+    const now = new Date();
+    dateGenEl.textContent = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+  }
+
+  if (periodEl && dates && dates.length > 0) {
+    const fmt = (d) => `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+    periodEl.textContent = `ໄລຍະເວລາ: ${fmt(dates[0])} ຫາ ${fmt(dates[dates.length-1])}`;
   }
 }
 
@@ -341,39 +628,20 @@ function populateDepartmentDropdown() {
   });
 }
 
-// --- DATE CALCULATOR HELPER ---
+// --- DATE RANGE CALCULATOR ---
 function calculateDateRange() {
   const dates = [];
-
-  if (cycleType === 'month') {
-    // 1st to Last day of selected Month
-    const numDays = new Date(currentYear, currentMonth + 1, 0).getDate();
-    for (let day = 1; day <= numDays; day++) {
-      dates.push(new Date(currentYear, currentMonth, day));
-    }
-  } else {
-    // 21st of Previous Month to 20th of Current Month
-    let prevYear = currentYear;
-    let prevMonth = currentMonth - 1;
-    if (prevMonth < 0) {
-      prevMonth = 11;
-      prevYear--;
-    }
-
-    // Number of days in previous month
-    const daysInPrevMonth = new Date(prevYear, prevMonth + 1, 0).getDate();
-
-    // Add days from previous month (21st to end)
-    for (let day = 21; day <= daysInPrevMonth; day++) {
-      dates.push(new Date(prevYear, prevMonth, day));
-    }
-
-    // Add days of current month (1st to 20th)
-    for (let day = 1; day <= 20; day++) {
-      dates.push(new Date(currentYear, currentMonth, day));
-    }
+  if (!customStartDate || !customEndDate) {
+    const def = getDefaultDateRange();
+    customStartDate = def.start;
+    customEndDate = def.end;
   }
-
+  // Iterate day by day from start to end
+  const cur = new Date(customStartDate);
+  while (cur <= customEndDate) {
+    dates.push(new Date(cur));
+    cur.setDate(cur.getDate() + 1);
+  }
   return dates;
 }
 
@@ -388,6 +656,34 @@ function renderRosterGrid() {
       (staff.notes && staff.notes.toLowerCase().includes(searchQuery));
     return matchesDept && matchesSearch;
   });
+
+  // Sort by custom department order: Pharmacy -> Nurse -> Internal medicine -> Pediatric Department -> Laboratory Department -> Chauffeur
+  const DEPT_SORT_ORDER = [
+    'Pharmacy',
+    'Nurse',
+    'Internal medicine',
+    'Pediatric Department',
+    'Laboratory Department',
+    'Chauffeur'
+  ];
+
+  filteredStaff.sort((a, b) => {
+    const deptA = a.department ? a.department.trim() : '';
+    const deptB = b.department ? b.department.trim() : '';
+    
+    const indexA = DEPT_SORT_ORDER.indexOf(deptA);
+    const indexB = DEPT_SORT_ORDER.indexOf(deptB);
+    
+    const valA = indexA === -1 ? 999 : indexA;
+    const valB = indexB === -1 ? 999 : indexB;
+    
+    if (valA !== valB) {
+      return valA - valB;
+    }
+    
+    return a.name.localeCompare(b.name, 'lo-LA');
+  });
+
 
   let html = '';
 
@@ -450,7 +746,19 @@ function renderRosterGrid() {
           shiftsCount += 1.0;
         }
 
-        html += `    <td class="shift-cell ${cellClass}" data-staff-id="${staff.id}" data-date="${dateStr}">`;
+        const auth = window.AppAuth;
+        const isDataEntry = auth && auth.profile && auth.profile.role === 'data_entry';
+        const todayStr = formatDateISO(new Date());
+        const isToday = dateStr === todayStr;
+
+        let lockedClass = '';
+        let titleAttr = '';
+        if (isDataEntry && !isToday) {
+          lockedClass = ' locked-cell';
+          titleAttr = ' title="ສາມາດບັນທຶກໄດ້ສະເພາະມື້ນີ້ເທົ່ານັ້ນ"';
+        }
+
+        html += `    <td class="shift-cell ${cellClass}${lockedClass}" data-staff-id="${staff.id}" data-date="${dateStr}"${titleAttr}>`;
         if (hasShift) {
           html += '      <span class="shift-badge">1</span>';
         }
@@ -490,6 +798,23 @@ function hasActiveShift(staffId, dateStr) {
 // Toggle shift via API
 async function toggleShift(staffId, dateStr) {
   try {
+    const auth = window.AppAuth;
+    const isDataEntry = auth && auth.profile && auth.profile.role === 'data_entry';
+    if (isDataEntry) {
+      const todayStr = formatDateISO(new Date());
+      if (dateStr !== todayStr) {
+        alert('ທ່ານສາມາດບັນທຶກເວນໄດ້ສະເພາະວັນທີປັດຈຸບັນ (ມື້ນີ້) ເທົ່ານັ້ນ!');
+        return;
+      }
+      
+      // Once ticked, cannot untick/remove for data entry role
+      const hasShift = hasActiveShift(staffId, dateStr);
+      if (hasShift) {
+        alert('ບັນທຶກເວນແລ້ວ ບໍ່ສາມາດຍົກເລີກ ຫຼື ຕິກອອກໄດ້ສຳລັບຜູ້ປ້ອນຂໍ້ມູນ!');
+        return;
+      }
+    }
+
     const res = await fetch('/api/shifts/toggle', {
       method: 'POST',
       headers: {
@@ -533,13 +858,67 @@ function renderStats() {
 
   // Total payout in current scope
   let totalPayrollSum = 0;
+  
+  // Calculate total payout by department
+  const deptTotals = {
+    'Pharmacy': 0,
+    'Nurse': 0,
+    'Internal medicine': 0,
+    'Pediatric Department': 0,
+    'Laboratory Department': 0,
+    'Chauffeur': 0
+  };
+
   shiftData.forEach(shift => {
     const staff = staffData.find(s => s.id === shift.staff_id);
     if (staff) {
       totalPayrollSum += (staff.rate_per_shift || 0);
+      const dept = staff.department ? staff.department.trim() : '';
+      if (deptTotals[dept] !== undefined) {
+        deptTotals[dept] += (staff.rate_per_shift || 0);
+      } else {
+        deptTotals[dept] = (deptTotals[dept] || 0) + (staff.rate_per_shift || 0);
+      }
     }
   });
   statTotalPayroll.textContent = formatCurrency(totalPayrollSum) + " ₭";
+
+  // Render department payroll grid
+  const deptPayrollGrid = document.getElementById('dept-payroll-grid');
+  if (deptPayrollGrid) {
+    let gridHtml = '';
+    
+    // Sort department summary display using same custom order as in Image 2
+    const DEPT_SORT_ORDER = [
+      'Pharmacy',
+      'Nurse',
+      'Internal medicine',
+      'Pediatric Department',
+      'Laboratory Department',
+      'Chauffeur'
+    ];
+    
+    const sortedDepts = Object.keys(deptTotals).sort((a, b) => {
+      const idxA = DEPT_SORT_ORDER.indexOf(a);
+      const idxB = DEPT_SORT_ORDER.indexOf(b);
+      const valA = idxA === -1 ? 999 : idxA;
+      const valB = idxB === -1 ? 999 : idxB;
+      return valA - valB;
+    });
+
+    sortedDepts.forEach(deptKey => {
+      const total = deptTotals[deptKey];
+      const deptLao = DEPT_TRANSLATIONS[deptKey] || deptKey;
+      gridHtml += `
+        <div class="dept-payroll-card">
+          <span class="dept-name">${deptLao}</span>
+          <span class="dept-value">${formatCurrency(total)} ₭</span>
+        </div>
+      `;
+    });
+    
+    deptPayrollGrid.innerHTML = gridHtml;
+  }
 
   // Active shifts today
   const todayStr = formatDateISO(new Date());
@@ -553,8 +932,32 @@ function renderStaffModalList() {
   if (staffData.length === 0) {
     html = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">ບໍ່ມີລາຍຊື່ບຸກຄະລາກອນໃນລະບົບ</td></tr>`;
   } else {
-    // Sort by name
-    const sorted = [...staffData].sort((a, b) => a.name.localeCompare(b.name, 'lo-LA'));
+    // Sort by custom department order: Pharmacy -> Nurse -> Internal medicine -> Pediatric Department -> Laboratory Department -> Chauffeur
+    const DEPT_SORT_ORDER = [
+      'Pharmacy',
+      'Nurse',
+      'Internal medicine',
+      'Pediatric Department',
+      'Laboratory Department',
+      'Chauffeur'
+    ];
+
+    const sorted = [...staffData].sort((a, b) => {
+      const deptA = a.department ? a.department.trim() : '';
+      const deptB = b.department ? b.department.trim() : '';
+      
+      const indexA = DEPT_SORT_ORDER.indexOf(deptA);
+      const indexB = DEPT_SORT_ORDER.indexOf(deptB);
+      
+      const valA = indexA === -1 ? 999 : indexA;
+      const valB = indexB === -1 ? 999 : indexB;
+      
+      if (valA !== valB) {
+        return valA - valB;
+      }
+      
+      return a.name.localeCompare(b.name, 'lo-LA');
+    });
     sorted.forEach(staff => {
       html += `
         <tr>
@@ -604,9 +1007,10 @@ function prepareEditStaff(id) {
   submitStaffBtn.textContent = 'ອັບເດດຂໍ້ມູນ';
   addStaffForm.querySelector('h3').textContent = '✏️ ແກ້ໄຂຂໍ້ມູນບຸກຄະລາກອນ';
 
-  // Keep department locked for non-admins during edit
+  // Keep department locked for non-admins during edit (excluding data_entry)
   const auth = window.AppAuth;
-  if (auth && auth.isReady && !auth.isAdmin && auth.profile && auth.profile.department) {
+  const isDataEntry = auth && auth.profile && auth.profile.role === 'data_entry';
+  if (auth && auth.isReady && !auth.isAdmin && !isDataEntry && auth.profile && auth.profile.department) {
     inputStaffDept.disabled = true;
   } else {
     inputStaffDept.disabled = false;
@@ -730,7 +1134,7 @@ async function renderUsersModalList() {
         html += `
           <tr>
             <td><strong>${user.username}</strong></td>
-            <td><span class="status-badge" style="background: rgba(255,255,255,0.04); border-color: var(--border-color);">${user.role}</span></td>
+            <td><span class="status-badge" style="background: rgba(255,255,255,0.04); border-color: var(--border-color);">${user.role === 'admin' ? 'Admin (ຜູ້ດູແລ)' : (user.role === 'data_entry' ? 'Data Entry (ຜູ້ປ້ອນຂໍ້ມູນ)' : user.role)}</span></td>
             <td>${DEPT_TRANSLATIONS[user.department] || user.department || '-'}</td>
             <td><span style="font-family: monospace;">${user.password}</span></td>
             <td>

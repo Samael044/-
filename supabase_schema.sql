@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.app_users (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     username text UNIQUE NOT NULL,
     password text NOT NULL,
-    role text NOT NULL DEFAULT 'department',
+    role text NOT NULL DEFAULT 'data_entry',
     department text
 );
 
@@ -33,17 +33,17 @@ ON public.app_users FOR DELETE USING (true);
 
 -- Insert initial users (default accounts)
 INSERT INTO public.app_users (username, password, role, department) VALUES
-('Pharmacy', 'PM1234', 'department', 'Pharmacy'),
-('Pharmacy1', 'PM1234', 'department', 'Pharmacy'),
-('Pharmacy2', 'PM1234', 'department', 'Pharmacy'),
-('Pharmacy3', 'PM1234', 'department', 'Pharmacy'),
-('Pharmacy4', 'PM1234', 'department', 'Pharmacy'),
-('Pharmacy5', 'PM1234', 'department', 'Pharmacy'),
-('Nurse', 'N12345', 'department', 'Nurse'),
-('Internal medicine', 'MED1234', 'department', 'Internal medicine'),
-('Pediatric Department', 'PED1234', 'department', 'Pediatric Department'),
-('Laboratory Department', 'LAB1234', 'department', 'Laboratory Department'),
-('Chauffeur', 'CF1234', 'department', 'Chauffeur'),
+('Pharmacy', 'PM1234', 'data_entry', null),
+('Pharmacy1', 'PM1234', 'data_entry', null),
+('Pharmacy2', 'PM1234', 'data_entry', null),
+('Pharmacy3', 'PM1234', 'data_entry', null),
+('Pharmacy4', 'PM1234', 'data_entry', null),
+('Pharmacy5', 'PM1234', 'data_entry', null),
+('Nurse', 'N12345', 'data_entry', null),
+('Internal medicine', 'MED1234', 'data_entry', null),
+('Pediatric Department', 'PED1234', 'data_entry', null),
+('Laboratory Department', 'LAB1234', 'data_entry', null),
+('Chauffeur', 'CF1234', 'data_entry', null),
 ('Admin', 'AD1234', 'admin', null)
 ON CONFLICT (username) DO UPDATE SET 
     password = EXCLUDED.password,

@@ -22,7 +22,7 @@
   --table-header-bg: #1f2937;
   --cell-active-bg: linear-gradient(135deg, #06b6d4, #10b981);
   --cell-hover-bg: rgba(6, 182, 212, 0.15);
-  
+
   --font-title: 'Outfit', 'Noto Sans Lao', 'Noto Sans Thai', sans-serif;
   --font-body: 'Inter', 'Noto Sans Lao', 'Noto Sans Thai', sans-serif;
 }
@@ -78,17 +78,18 @@ body {
   left: 10%;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
   z-index: -1;
   pointer-events: none;
 }
+
 .bg-blur-2 {
   position: absolute;
   bottom: 10%;
   right: 5%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
   z-index: -1;
   pointer-events: none;
 }
@@ -98,7 +99,7 @@ body {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.1rem;
 }
 
 /* --- MAIN HEADER --- */
@@ -107,7 +108,7 @@ body {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--border-color);
 }
@@ -116,6 +117,15 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
 }
 
 .logo-icon {
@@ -130,6 +140,7 @@ body {
   color: var(--primary);
   flex-shrink: 0;
 }
+
 .logo-icon svg {
   width: 28px;
   height: 28px;
@@ -144,6 +155,7 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
 [data-theme="light"] .title-text h1 {
   background: linear-gradient(to right, #0f172a, #2563eb);
   -webkit-background-clip: text;
@@ -155,18 +167,12 @@ body {
   color: var(--text-muted);
 }
 
-.header-actions {
-  display: flex;
-  gap: 0.8rem;
-  align-items: center;
-}
-
 /* --- BUTTONS --- */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.65rem 1.25rem;
+  padding: 0.65rem 0.5rem;
   border-radius: 0.75rem;
   font-family: var(--font-body);
   font-weight: 600;
@@ -181,10 +187,12 @@ body {
   color: #000;
   box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
 }
+
 [data-theme="light"] .btn-primary {
   color: #fff;
   box-shadow: 0 4px 14px rgba(12, 116, 137, 0.2);
 }
+
 .btn-primary:hover {
   background-color: var(--primary-hover);
   transform: translateY(-1px);
@@ -195,6 +203,7 @@ body {
   color: var(--text-main);
   border-color: var(--border-color);
 }
+
 .btn-secondary:hover {
   background-color: var(--secondary-hover);
   transform: translateY(-1px);
@@ -204,6 +213,7 @@ body {
   background-color: var(--error);
   color: white;
 }
+
 .btn-danger:hover {
   background-color: #dc2626;
 }
@@ -214,6 +224,7 @@ body {
   border-color: rgba(239, 68, 68, 0.3);
   gap: 0.4rem;
 }
+
 .btn-logout:hover {
   background-color: rgba(239, 68, 68, 0.22);
   border-color: rgba(239, 68, 68, 0.5);
@@ -226,13 +237,16 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.4rem 0.85rem;
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-color);
   border-radius: 2rem;
   font-size: 0.8rem;
   color: var(--text-muted);
 }
-.user-info svg { flex-shrink: 0; }
+
+.user-info svg {
+  flex-shrink: 0;
+}
 
 .user-role-badge {
   background: linear-gradient(135deg, #06b6d4, #10b981);
@@ -244,9 +258,15 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
 .user-role-badge.dept {
   background: linear-gradient(135deg, #7c3aed, #a78bfa);
 }
+
+.user-role-badge.data-entry {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+}
+
 
 
 .icon-btn {
@@ -262,14 +282,17 @@ body {
   color: var(--text-main);
   transition: all 0.2s ease;
 }
+
 .icon-btn:hover {
   background-color: var(--secondary-hover);
   transform: scale(1.05);
 }
+
 .icon-btn svg {
   width: 18px;
   height: 18px;
 }
+
 .theme-icon-svg {
   width: 18px;
   height: 18px;
@@ -306,6 +329,7 @@ body {
   gap: 1.25rem;
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
+
 .stat-card:hover {
   transform: translateY(-3px);
   border-color: rgba(6, 182, 212, 0.4);
@@ -322,19 +346,41 @@ body {
   border: 1px solid var(--border-color);
   flex-shrink: 0;
 }
+
 .stat-icon svg {
   width: 26px;
   height: 26px;
 }
-.staff-icon { color: #60a5fa; border-color: rgba(96, 165, 250, 0.2); background: rgba(96, 165, 250, 0.07); }
-.shifts-icon { color: #f59e0b; border-color: rgba(245, 158, 11, 0.2); background: rgba(245, 158, 11, 0.07); }
-.payroll-icon { color: #10b981; border-color: rgba(16, 185, 129, 0.2); background: rgba(16, 185, 129, 0.07); }
-.duty-icon { color: #a78bfa; border-color: rgba(167, 139, 250, 0.2); background: rgba(167, 139, 250, 0.07); }
+
+.staff-icon {
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.2);
+  background: rgba(96, 165, 250, 0.07);
+}
+
+.shifts-icon {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.2);
+  background: rgba(245, 158, 11, 0.07);
+}
+
+.payroll-icon {
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.07);
+}
+
+.duty-icon {
+  color: #a78bfa;
+  border-color: rgba(167, 139, 250, 0.2);
+  background: rgba(167, 139, 250, 0.07);
+}
 
 .stat-details {
   display: flex;
   flex-direction: column;
 }
+
 .stat-label {
   font-size: 0.85rem;
   color: var(--text-muted);
@@ -342,6 +388,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
@@ -368,6 +415,7 @@ body {
   flex-direction: column;
   gap: 0.4rem;
 }
+
 .control-item label {
   font-size: 0.8rem;
   font-weight: 600;
@@ -387,22 +435,27 @@ body {
   min-width: 140px;
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
+
 .form-control option {
   background-color: #1f2937;
   color: #f3f4f6;
 }
+
 [data-theme="light"] .form-control {
   background-color: #ffffff;
   color: #1e293b;
 }
+
 [data-theme="light"] .form-control option {
   background-color: #ffffff;
   color: #1e293b;
 }
+
 .form-control:focus {
   border-color: var(--primary);
   background-color: #263244;
 }
+
 [data-theme="light"] .form-control:focus {
   background-color: #f1f5f9;
   border-color: var(--primary);
@@ -412,8 +465,34 @@ body {
   flex-grow: 1;
   min-width: 200px;
 }
+
 .search-item input {
   width: 100%;
+}
+
+/* Date Range Picker Styles */
+.date-range-item {
+  min-width: 155px;
+}
+
+.date-input {
+  min-width: 155px !important;
+  cursor: pointer;
+  color-scheme: dark;
+}
+
+[data-theme="light"] .date-input {
+  color-scheme: light;
+}
+
+.date-range-arrow {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 .divider {
@@ -446,11 +525,13 @@ body {
   flex-wrap: wrap;
   gap: 1rem;
 }
+
 .roster-header-meta h2 {
   font-family: var(--font-title);
   font-size: 1.25rem;
   font-weight: 600;
 }
+
 .status-badge {
   background-color: rgba(6, 182, 212, 0.1);
   color: var(--primary);
@@ -481,7 +562,7 @@ body {
 }
 
 /* Sticky Headers & Sticky Left Columns */
-.roster-table th, 
+.roster-table th,
 .roster-table td {
   padding: 0.65rem 0.75rem;
   border-bottom: 1px solid var(--border-color);
@@ -507,11 +588,13 @@ body {
   max-width: 45px;
   text-align: center;
   background-color: var(--table-header-bg);
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
+
 [data-theme="light"] .roster-table td:nth-child(1) {
   background-color: #fff;
 }
+
 .roster-table td:nth-child(1) {
   background-color: #111827;
 }
@@ -526,11 +609,13 @@ body {
   min-width: 180px;
   text-align: left;
   background-color: var(--table-header-bg);
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
+
 [data-theme="light"] .roster-table td:nth-child(2) {
   background-color: #fff;
 }
+
 .roster-table td:nth-child(2) {
   background-color: #111827;
   font-weight: 500;
@@ -543,14 +628,16 @@ body {
   left: 225px;
   z-index: 10;
   width: 100px;
-  min-width: 100px;
+  min-width: px;
   text-align: center;
   background-color: var(--table-header-bg);
-  box-shadow: 4px 0 5px rgba(0,0,0,0.1);
+  box-shadow: 4px 0 5px rgba(0, 0, 0, 0.1);
 }
+
 [data-theme="light"] .roster-table td:nth-child(3) {
   background-color: #fff;
 }
+
 .roster-table td:nth-child(3) {
   background-color: #111827;
   color: var(--text-muted);
@@ -559,15 +646,17 @@ body {
 /* Header Date alignment */
 .roster-table th.date-cell {
   text-align: center;
-  min-width: 38px;
+  min-width: 30px;
   padding: 0.4rem 0.2rem;
 }
+
 .roster-table th.date-cell .day-of-week {
   display: block;
   font-size: 0.7rem;
   font-weight: 500;
   color: var(--text-muted);
 }
+
 .roster-table th.date-cell .day-num {
   font-family: var(--font-title);
   font-size: 0.95rem;
@@ -578,6 +667,7 @@ body {
 .roster-table th.weekend-header {
   background-color: rgba(239, 68, 68, 0.2) !important;
 }
+
 .roster-table th.weekend-header .day-of-week,
 .roster-table th.weekend-header .day-num {
   color: var(--weekend-text) !important;
@@ -595,54 +685,82 @@ body {
   position: relative;
   user-select: none;
 }
+
 .roster-table td.shift-cell:hover {
   background-color: var(--cell-hover-bg);
 }
+
+.roster-table td.shift-cell.locked-cell {
+  cursor: not-allowed;
+  opacity: 0.55;
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.roster-table td.shift-cell.locked-cell:hover {
+  background-color: transparent !important;
+}
+
+.roster-table td.shift-cell.locked-cell .shift-badge {
+  filter: grayscale(1) opacity(0.7);
+  box-shadow: none;
+}
+
 
 /* Active Shift Badge (1) */
 .shift-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: var(--cell-active-bg);
   color: #000;
   font-weight: 700;
   font-family: var(--font-title);
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   box-shadow: 0 2px 6px rgba(6, 182, 212, 0.4);
   animation: popIn 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
 [data-theme="light"] .shift-badge {
   color: #fff;
   box-shadow: 0 2px 6px rgba(8, 145, 178, 0.3);
 }
 
 @keyframes popIn {
-  0% { transform: scale(0.6); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* Summary Columns at Right of Roster */
 .roster-table th.sum-header,
 .roster-table td.sum-cell {
-  background-color: rgba(255,255,255,0.02);
+  background-color: rgba(255, 255, 255, 0.02);
   text-align: center;
   font-family: var(--font-title);
   font-weight: 600;
 }
+
 [data-theme="light"] .roster-table th.sum-header,
 [data-theme="light"] .roster-table td.sum-cell {
-  background-color: rgba(0,0,0,0.02);
+  background-color: rgba(0, 0, 0, 0.02);
 }
+
 .roster-table td.sum-cell.payout-col {
   text-align: right;
   padding-right: 1rem;
   font-weight: 700;
   color: var(--accent);
 }
+
 .roster-table td.sum-cell.rate-col {
   text-align: right;
   padding-right: 0.75rem;
@@ -653,15 +771,18 @@ body {
 .roster-table tbody tr:hover td {
   background-color: rgba(255, 255, 255, 0.02);
 }
+
 [data-theme="light"] .roster-table tbody tr:hover td {
   background-color: rgba(0, 0, 0, 0.01);
 }
+
 /* Re-ensure sticky cells stay sticky but match hover background */
 .roster-table tbody tr:hover td:nth-child(1),
 .roster-table tbody tr:hover td:nth-child(2),
 .roster-table tbody tr:hover td:nth-child(3) {
   background-color: #172030 !important;
 }
+
 [data-theme="light"] .roster-table tbody tr:hover td:nth-child(1),
 [data-theme="light"] .roster-table tbody tr:hover td:nth-child(2),
 [data-theme="light"] .roster-table tbody tr:hover td:nth-child(3) {
@@ -705,6 +826,7 @@ body {
   transform: translateY(20px);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
 [data-theme="light"] .modal-container {
   background-color: #ffffff;
 }
@@ -720,11 +842,13 @@ body {
   justify-content: space-between;
   align-items: center;
 }
+
 .modal-header h2 {
   font-family: var(--font-title);
   font-size: 1.3rem;
   color: var(--text-main);
 }
+
 .close-modal-btn {
   background: none;
   border: none;
@@ -732,6 +856,7 @@ body {
   font-size: 1.8rem;
   cursor: pointer;
 }
+
 .close-modal-btn:hover {
   color: var(--text-main);
 }
@@ -746,14 +871,16 @@ body {
 
 /* Add Staff Form Styling */
 .add-staff-form-panel {
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border-color);
   border-radius: 1rem;
   padding: 1.25rem;
 }
+
 [data-theme="light"] .add-staff-form-panel {
-  background: rgba(0,0,0,0.01);
+  background: rgba(0, 0, 0, 0.01);
 }
+
 .add-staff-form-panel h3 {
   font-size: 1rem;
   margin-bottom: 0.75rem;
@@ -774,11 +901,13 @@ body {
   flex: 1;
   min-width: 180px;
 }
+
 .form-field label {
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-muted);
 }
+
 .form-field input,
 .form-field select {
   background-color: rgba(255, 255, 255, 0.04);
@@ -793,31 +922,38 @@ body {
   box-sizing: border-box;
   transition: border-color 0.2s, background-color 0.2s;
 }
+
 .form-field select option {
   background-color: #111827;
   color: var(--text-main);
 }
+
 [data-theme="light"] .form-field select option {
   background-color: #ffffff;
   color: #1e293b;
 }
+
 [data-theme="light"] .form-field input,
 [data-theme="light"] .form-field select {
   background-color: rgba(0, 0, 0, 0.02);
   color: #1e293b;
 }
+
 .form-field input:focus,
 .form-field select:focus {
   border-color: var(--primary);
 }
+
 .form-field select:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   background-color: rgba(255, 255, 255, 0.08);
 }
+
 [data-theme="light"] .form-field select:disabled {
   background-color: rgba(0, 0, 0, 0.06);
 }
+
 .form-field .required {
   color: var(--error);
 }
@@ -826,6 +962,7 @@ body {
   min-width: 120px;
   flex-grow: 0;
 }
+
 .submit-field button {
   width: 100%;
 }
@@ -841,36 +978,43 @@ body {
   font-size: 1rem;
   margin-bottom: 0.75rem;
 }
+
 .staff-list-scroll {
   max-height: 300px;
   overflow-y: auto;
   border: 1px solid var(--border-color);
   border-radius: 0.75rem;
 }
+
 .staff-list-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
 }
+
 .staff-list-table th,
 .staff-list-table td {
   padding: 0.6rem 0.85rem;
   border-bottom: 1px solid var(--border-color);
   text-align: left;
 }
+
 .staff-list-table th {
   background-color: var(--table-header-bg);
   color: var(--text-muted);
   font-weight: 600;
 }
+
 .staff-list-table td {
   color: var(--text-main);
 }
+
 .table-actions {
   display: flex;
   gap: 0.5rem;
   justify-content: center;
 }
+
 .action-btn {
   padding: 0.35rem 0.6rem;
   font-size: 0.75rem;
@@ -888,41 +1032,178 @@ body {
   padding-top: 1.5rem;
 }
 
-/* --- PRINT-SPECIFIC STYLES --- */
+
+/* --- DEPARTMENT PAYROLL SUMMARY --- */
+.dept-payroll-summary {
+  padding: 1.25rem;
+  border-radius: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.dept-payroll-summary h3.summary-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dept-payroll-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.dept-payroll-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+[data-theme="light"] .dept-payroll-card {
+  background: rgba(0, 0, 0, 0.01);
+}
+
+.dept-payroll-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+.dept-payroll-card .dept-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.dept-payroll-card .dept-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-title);
+}
+
+/* Hide in print mode */
 @media print {
-  body {
-    background: white !important;
-    color: black !important;
-    padding: 0 !important;
-  }
-  .bg-blur-1, .bg-blur-2, 
-  .header-actions, .control-panel, 
-  .admin-tip, .app-footer, .modal-overlay,
-  .status-badge {
+  .dept-payroll-summary {
     display: none !important;
   }
+}
+
+/* --- PRINT-SPECIFIC STYLES --- */
+
+/* Print Header Block (hidden on screen, shown on print) */
+.print-header-block {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm 8mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background: white !important;
+    color: #1a1a2e !important;
+    padding: 0 !important;
+    font-family: 'Noto Sans Lao', 'Inter', sans-serif !important;
+  }
+
+  /* Hide UI elements not needed for print */
+  .bg-blur-1,
+  .bg-blur-2,
+  .header-actions,
+  .control-panel,
+  .admin-tip,
+  .app-footer,
+  .modal-overlay,
+  .status-badge,
+  .stats-dashboard {
+    display: none !important;
+  }
+
   .app-container {
     max-width: 100% !important;
-    gap: 1rem !important;
+    gap: 0 !important;
+    padding: 0 !important;
   }
+
+  /* ===== PRINT HEADER ===== */
   .main-header {
-    border-bottom: 2px solid #000 !important;
-    padding-bottom: 0.5rem !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    display: block !important;
   }
-  .logo-icon {
+
+  /* Hide the screen logo-area & user actions, show print header block instead */
+  .logo-area {
+    display: none !important;
+  }
+
+  .print-header-block {
+    display: block !important;
+    width: 100%;
+    border-bottom: 3px solid #06b6d4;
+    padding-bottom: 6pt;
+    margin-bottom: 6pt;
+  }
+
+  .print-header-block .print-hospital-name {
+    font-size: 13pt;
+    font-weight: 800;
+    color: #06b6d4;
+    letter-spacing: 0.02em;
+    margin: 0 0 1pt 0;
+  }
+
+  .print-header-block .print-doc-title {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0 0 1pt 0;
+  }
+
+  .print-header-block .print-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8pt;
+    color: #555;
+    margin-top: 3pt;
+  }
+
+  .print-header-block .print-period-badge {
+    background: #e0f7fa;
+    color: #0277bd;
+    border: 1px solid #b3e5fc;
+    border-radius: 4pt;
+    padding: 1pt 6pt;
+    font-weight: 600;
+    font-size: 8pt;
+  }
+
+  /* ===== ROSTER WRAPPER ===== */
+  .roster-wrapper {
     background: transparent !important;
-    border: 1px solid #000 !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    gap: 4pt !important;
   }
-  .logo-icon svg {
-    color: #000 !important;
-    stroke: #000 !important;
-  }
-  .title-text h1 {
-    color: black !important;
-    background: none !important;
-    -webkit-text-fill-color: initial !important;
-    font-size: 1.5rem !important;
-  }
+
   .card {
     background: transparent !important;
     border: none !important;
@@ -930,47 +1211,159 @@ body {
     backdrop-filter: none !important;
     padding: 0 !important;
   }
-  .stats-dashboard {
-    display: none !important; /* Hide dashboard cards when printing */
+
+  .roster-header-meta {
+    margin-bottom: 4pt;
   }
+
+  .roster-header-meta h2 {
+    font-size: 9pt !important;
+    font-weight: 700 !important;
+    color: #1a1a2e !important;
+  }
+
+  /* ===== TABLE ===== */
   .table-container {
-    border: 1px solid #000 !important;
+    border: none !important;
     box-shadow: none !important;
-    overflow-x: visible !important;
+    overflow: visible !important;
+    border-radius: 0 !important;
   }
+
   .roster-table {
     border-collapse: collapse !important;
     width: 100% !important;
-    font-size: 7.5pt !important; /* Scaled down for horizontal fitting */
+    font-size: 7pt !important;
+    table-layout: auto;
   }
-  .roster-table th, 
+
+  .roster-table th,
   .roster-table td {
-    border: 1px solid #999 !important;
-    color: black !important;
+    border: 0.5pt solid #ccd6e0 !important;
+    color: #1a1a2e !important;
     background-color: transparent !important;
-    padding: 4px 2px !important;
+    padding: 3pt 2pt !important;
+    text-align: center;
   }
-  /* Remove sticky positioning for print layout */
-  .roster-table th:nth-child(1), .roster-table td:nth-child(1),
-  .roster-table th:nth-child(2), .roster-table td:nth-child(2),
-  .roster-table th:nth-child(3), .roster-table td:nth-child(3) {
+
+  /* Header row */
+  .roster-table thead th {
+    background-color: #e8f4fd !important;
+    color: #1a1a2e !important;
+    font-weight: 700 !important;
+    font-size: 6.5pt !important;
+  }
+
+  /* Staff name column */
+  .roster-table td:nth-child(2) {
+    text-align: left !important;
+    font-weight: 600 !important;
+    white-space: nowrap;
+  }
+
+  /* Dept column */
+  .roster-table td:nth-child(3) {
+    font-size: 6pt !important;
+    color: #555 !important;
+  }
+
+  /* Remove sticky positioning */
+  .roster-table th:nth-child(1),
+  .roster-table td:nth-child(1),
+  .roster-table th:nth-child(2),
+  .roster-table td:nth-child(2),
+  .roster-table th:nth-child(3),
+  .roster-table td:nth-child(3) {
     position: static !important;
-    background: transparent !important;
     box-shadow: none !important;
+    background-color: #e8f4fd !important;
   }
+
+  .roster-table tbody td:nth-child(1),
+  .roster-table tbody td:nth-child(2),
+  .roster-table tbody td:nth-child(3) {
+    background-color: #f9fafb !important;
+  }
+
+  /* Weekend columns */
   .roster-table th.weekend-header {
-    background-color: #f3f4f6 !important; /* Light grey instead of red overlay */
+    background-color: #fde8e8 !important;
+    color: #c0392b !important;
   }
+
   .roster-table td.weekend-cell {
-    background-color: #fafafa !important;
+    background-color: #fff5f5 !important;
   }
+
+  .roster-table th.weekend-header .day-of-week,
+  .roster-table th.weekend-header .day-num {
+    color: #c0392b !important;
+  }
+
+  /* Alternating row colors */
+  .roster-table tbody tr:nth-child(even) td {
+    background-color: #f7fafd !important;
+  }
+
+  .roster-table tbody tr:nth-child(even) td:nth-child(1),
+  .roster-table tbody tr:nth-child(even) td:nth-child(2),
+  .roster-table tbody tr:nth-child(even) td:nth-child(3) {
+    background-color: #edf4fb !important;
+  }
+
+  /* Shift badge */
   .shift-badge {
-    background: transparent !important;
-    color: black !important;
-    border: 1px solid #000 !important;
+    background: #06b6d4 !important;
+    color: white !important;
+    border: none !important;
     box-shadow: none !important;
-    width: 18px !important;
-    height: 18px !important;
-    font-size: 8pt !important;
+    width: 16pt !important;
+    height: 16pt !important;
+    font-size: 7pt !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 700 !important;
+  }
+
+  /* Sum columns */
+  .roster-table td.sum-cell {
+    background-color: #e8f4fd !important;
+    font-weight: 700 !important;
+    font-size: 7pt !important;
+  }
+
+  .roster-table td.sum-cell.payout-col {
+    color: #059669 !important;
+    font-weight: 800 !important;
+  }
+
+  /* Print footer */
+  .print-footer-row {
+    display: flex !important;
+    justify-content: space-between;
+    margin-top: 8pt;
+    font-size: 7pt;
+    color: #777;
+    border-top: 1pt solid #ccd6e0;
+    padding-top: 4pt;
+  }
+
+  .print-sign-area {
+    display: flex !important;
+    gap: 40pt;
+    font-size: 8pt;
+  }
+
+  .print-sign-box {
+    text-align: center;
+    min-width: 80pt;
+  }
+
+  .print-sign-line {
+    border-bottom: 1pt solid #333;
+    height: 20pt;
+    margin-bottom: 3pt;
   }
 }

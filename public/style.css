@@ -1088,6 +1088,43 @@ body {
   font-family: var(--font-title);
 }
 
+
+/* Excel Preview Editable Inputs */
+.preview-input,
+.preview-select {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  outline: none;
+  font-family: var(--font-body);
+  width: 100%;
+  font-size: 0.85rem;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+[data-theme="light"] .preview-input,
+[data-theme="light"] .preview-select {
+  background-color: rgba(0, 0, 0, 0.02);
+  color: #1e293b;
+}
+
+.preview-input:focus,
+.preview-select:focus {
+  border-color: var(--primary);
+}
+
+.preview-select option {
+  background-color: #111827;
+  color: var(--text-main);
+}
+
+[data-theme="light"] .preview-select option {
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
 /* Hide in print mode */
 @media print {
   .dept-payroll-summary {

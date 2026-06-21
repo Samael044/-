@@ -15,11 +15,27 @@ let customEndDate = null;
 // Helper: default to 21st of last month → 20th of this month
 function getDefaultDateRange() {
   const now = new Date();
-  const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
-  const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
-  const start = new Date(prevYear, prevMonth, 21);
-  const end = new Date(now.getFullYear(), now.getMonth(), 20);
+  let start, end;
+  if (now.getDate() >= 21) {
+    start = new Date(now.getFullYear(), now.getMonth(), 21);
+    end = new Date(now.getFullYear(), now.getMonth() + 1, 20);
+  } else {
+    const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+    const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    start = new Date(prevYear, prevMonth, 21);
+    end = new Date(now.getFullYear(), now.getMonth(), 20);
+  }
   return { start, end };
+}
+
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 // Lao Months and Weekdays Names
@@ -444,16 +460,33 @@ function setupExcelImport() {
           return;
         }
 
-        // Render preview
+        // Render preview with editable inputs
         let previewHtml = '';
-        pendingImportRows.forEach(row => {
-          const deptLao = DEPT_TRANSLATIONS[row.department] || row.department;
+        pendingImportRows.forEach((row, idx) => {
           previewHtml += `
-            <tr>
-              <td><strong>${row.name}</strong></td>
-              <td><span class="status-badge" style="background: rgba(255,255,255,0.04); border-color: var(--border-color);">${deptLao}</span></td>
-              <td style="font-family: var(--font-title); font-weight: 600;">${formatCurrency(row.rate_per_shift)} ₭</td>
-              <td><span style="color: var(--text-muted); font-size: 0.8rem;">${row.notes || '-'}</span></td>
+            <tr data-index="${idx}">
+              <td>
+                <input type="text" class="preview-input" value="${escapeHtml(row.name)}" data-field="name" data-index="${idx}">
+              </td>
+              <td>
+                <select class="preview-select" data-field="department" data-index="${idx}">
+                  <option value="Pharmacy" ${row.department === 'Pharmacy' ? 'selected' : ''}>ການຢາ</option>
+                  <option value="Nurse" ${row.department === 'Nurse' ? 'selected' : ''}>ພະຍາບານ</option>
+                  <option value="Internal medicine" ${row.department === 'Internal medicine' ? 'selected' : ''}>ພາຍໃນ</option>
+                  <option value="Pediatric Department" ${row.department === 'Pediatric Department' ? 'selected' : ''}>ເດັກນ້ອຍ</option>
+                  <option value="Laboratory Department" ${row.department === 'Laboratory Department' ? 'selected' : ''}>ວິເຄາະ</option>
+                  <option value="Chauffeur" ${row.department === 'Chauffeur' ? 'selected' : ''}>ໂຊເຟີ</option>
+                </select>
+              </td>
+              <td>
+                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                  <input type="number" class="preview-input" value="${row.rate_per_shift}" data-field="rate_per_shift" data-index="${idx}" style="text-align: right; min-width: 100px;">
+                  <span style="color: var(--text-muted);">₭</span>
+                </div>
+              </td>
+              <td>
+                <input type="text" class="preview-input" value="${escapeHtml(row.notes || '')}" data-field="notes" data-index="${idx}">
+              </td>
             </tr>
           `;
         });
@@ -515,6 +548,33 @@ function setupExcelImport() {
     excelPreviewTbody.innerHTML = '';
     excelPreviewWrapper.style.display = 'none';
     excelFileInput.value = '';
+  });
+
+  // Live update pending rows on input change using event delegation
+  excelPreviewTbody.addEventListener('input', (e) => {
+    const target = e.target;
+    const idx = parseInt(target.dataset.index);
+    const field = target.dataset.field;
+    if (isNaN(idx) || !field) return;
+
+    if (field === 'name') {
+      pendingImportRows[idx].name = target.value.trim();
+    } else if (field === 'rate_per_shift') {
+      pendingImportRows[idx].rate_per_shift = parseFloat(target.value) || 0;
+    } else if (field === 'notes') {
+      pendingImportRows[idx].notes = target.value.trim();
+    }
+  });
+
+  excelPreviewTbody.addEventListener('change', (e) => {
+    const target = e.target;
+    const idx = parseInt(target.dataset.index);
+    const field = target.dataset.field;
+    if (isNaN(idx) || !field) return;
+
+    if (field === 'department') {
+      pendingImportRows[idx].department = target.value;
+    }
   });
 }
 

@@ -39,7 +39,7 @@ INSERT INTO public.app_users (username, password, role, department) VALUES
 ('Pharmacy3', 'PM1234', 'data_entry', null),
 ('Pharmacy4', 'PM1234', 'data_entry', null),
 ('Pharmacy5', 'PM1234', 'data_entry', null),
-('Nurse', 'N12345', 'data_entry', null),
+('Nurse', 'N1234', 'nurse', null),
 ('Internal medicine', 'MED1234', 'data_entry', null),
 ('Pediatric Department', 'PED1234', 'data_entry', null),
 ('Laboratory Department', 'LAB1234', 'data_entry', null),

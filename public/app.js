@@ -291,6 +291,12 @@ function setupEventListeners() {
   // Theme Toggle
   themeToggleBtn.addEventListener('click', toggleTheme);
 
+  // Excel Export Setup
+  const exportExcelBtn = document.getElementById('export-excel-btn');
+  if (exportExcelBtn) {
+    exportExcelBtn.addEventListener('click', exportRosterToExcel);
+  }
+
   // Excel Import Setup
   setupExcelImport();
 }
@@ -576,6 +582,46 @@ function setupExcelImport() {
       pendingImportRows[idx].department = target.value;
     }
   });
+}
+
+function exportRosterToExcel() {
+  const table = document.getElementById('roster-grid-table');
+  if (!table) {
+    alert('ບໍ່ພົບຕາຕະລາງຂໍ້ມູນທີ່ຈະສົ່ງອອກ');
+    return;
+  }
+
+  // Clone table to modify it before exporting (so we don't mess up the UI)
+  const clonedTable = table.cloneNode(true);
+
+  // Replace shift badges (which contain the text "1" in a span) with raw number 1 in the cells
+  clonedTable.querySelectorAll('.shift-cell').forEach(cell => {
+    const badge = cell.querySelector('.shift-badge');
+    if (badge) {
+      cell.textContent = '1';
+    } else {
+      cell.textContent = '';
+    }
+  });
+
+  // Clean rate-col and payout-col to represent raw numbers in Excel
+  clonedTable.querySelectorAll('.rate-col, .payout-col').forEach(cell => {
+    const cleanText = cell.textContent.replace(/[^0-9.-]/g, '');
+    if (cleanText) {
+      cell.textContent = cleanText;
+    }
+  });
+
+  // Convert the cloned table to a worksheet
+  const wb = XLSX.utils.table_to_book(clonedTable, { sheet: "ຕາຕະລາງເວນ" });
+
+  // Generate filename with current date
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const filename = `Roster_Export_${dateStr}.xlsx`;
+
+  // Write and download the Excel file
+  XLSX.writeFile(wb, filename);
 }
 
 function closeStaffModal() {

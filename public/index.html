@@ -85,7 +85,7 @@
             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
           </svg>
         </button>
-        <!-- Print Button -->
+        <!-- Print Button
         <button id="print-roster-btn" class="btn btn-secondary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round" width="16" height="16">
@@ -94,7 +94,7 @@
             <rect x="6" y="14" width="12" height="8" />
           </svg>
           ພິມ / PDF
-        </button>
+        </button> -->
         <!-- Manage Staff Button (All Departments) -->
         <button id="open-staff-modal-btn" class="btn btn-primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -357,10 +357,14 @@
               <input type="text" id="input-staff-notes" placeholder="">
               <!-- <input type="text" id="input-staff-notes" placeholder="ເຊັ່ນ ລາຍເດືອນ, ງົດວັນເສົາ, ຯລຯ"> -->
             </div>
-            <div class="form-field submit-field" style="display: flex; gap: 0.5rem; min-width: 280px; align-items: flex-end;">
-              <button type="submit" id="submit-staff-btn" class="btn btn-primary" style="flex: 1; height: 38px;">ບັນທຶກຂໍ້ມູນ</button>
-              <button type="button" id="import-excel-btn" class="btn" style="flex: 1; height: 38px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem; font-weight: 500; cursor: pointer; padding: 0 0.5rem; font-size: 0.85rem;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+            <div class="form-field submit-field"
+              style="display: flex; gap: 0.5rem; min-width: 280px; align-items: flex-end;">
+              <button type="submit" id="submit-staff-btn" class="btn btn-primary"
+                style="flex: 1; height: 38px;">ບັນທຶກຂໍ້ມູນ</button>
+              <button type="button" id="import-excel-btn" class="btn"
+                style="flex: 1; height: 38px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.25rem; font-weight: 500; cursor: pointer; padding: 0 0.5rem; font-size: 0.85rem;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                  stroke-linejoin="round" width="14" height="14">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <polyline points="14 2 14 8 20 8"></polyline>
                   <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -377,21 +381,27 @@
         <hr class="modal-divider">
 
         <!-- Excel Preview Section -->
-        <div class="staff-list-wrapper" id="excel-preview-wrapper" style="display: none; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1.25rem; border-radius: 1rem; margin-bottom: 1.5rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-            <h3 style="color: #10b981; margin: 0; font-size: 1.05rem; display: flex; align-items: center; gap: 0.35rem;">
+        <div class="staff-list-wrapper" id="excel-preview-wrapper"
+          style="display: none; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1.25rem; border-radius: 1rem; margin-bottom: 1.5rem;">
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h3
+              style="color: #10b981; margin: 0; font-size: 1.05rem; display: flex; align-items: center; gap: 0.35rem;">
               <span>📋</span> ຕົວຢ່າງຂໍ້ມູນທີ່ຈະນຳເຂົ້າ (Excel Preview)
             </h3>
             <div style="display: flex; gap: 0.5rem;">
-              <button type="button" id="confirm-import-btn" class="btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.5rem 1.2rem; font-size: 0.85rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem; transition: opacity 0.2s;">
+              <button type="button" id="confirm-import-btn" class="btn"
+                style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.5rem 1.2rem; font-size: 0.85rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem; transition: opacity 0.2s;">
                 ✓ ຢືນຢັນການນຳເຂົ້າ
               </button>
-              <button type="button" id="cancel-import-btn" class="btn" style="background: #ef4444; color: white; padding: 0.5rem 1.2rem; font-size: 0.85rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem; transition: opacity 0.2s;">
+              <button type="button" id="cancel-import-btn" class="btn"
+                style="background: #ef4444; color: white; padding: 0.5rem 1.2rem; font-size: 0.85rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem; transition: opacity 0.2s;">
                 ✗ ຍົກເລີກ
               </button>
             </div>
           </div>
-          <div class="staff-list-scroll" style="max-height: 250px; border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 0.75rem;">
+          <div class="staff-list-scroll"
+            style="max-height: 250px; border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 0.75rem;">
             <table class="staff-list-table">
               <thead>
                 <tr>

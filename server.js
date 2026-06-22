@@ -205,7 +205,7 @@ app.get('/api/shifts', async (req, res) => {
       const db = await readMockDb();
       let filteredShifts = db.shifts;
       if (start_date && end_date) {
-        filteredShifts = db.shifts.filter(s => 
+        filteredShifts = db.shifts.filter(s =>
           s.shift_date >= start_date && s.shift_date <= end_date
         );
       }
@@ -260,7 +260,7 @@ app.post('/api/shifts/toggle', async (req, res) => {
       }
     } else {
       const db = await readMockDb();
-      const existingIdx = db.shifts.findIndex(s => 
+      const existingIdx = db.shifts.findIndex(s =>
         s.staff_id === staff_id && s.shift_date === shift_date
       );
 
@@ -297,7 +297,7 @@ app.post('/api/auth/login', async (req, res) => {
 
   try {
     let user = null;
-    
+
     // Resolve input name dynamically (e.g. "ການຢາ1" -> "Pharmacy1")
     const USERNAME_PREFIX_MAP = {
       'ການຢາ': 'Pharmacy',
@@ -325,14 +325,14 @@ app.post('/api/auth/login', async (req, res) => {
         .select('*');
       if (error) throw error;
 
-      user = data.find(u => 
-        u.username.toLowerCase() === normalizedInput || 
+      user = data.find(u =>
+        u.username.toLowerCase() === normalizedInput ||
         (u.email && u.email.toLowerCase() === normalizedInput)
       );
     } else {
       const users = await readUsersDb();
-      user = users.find(u => 
-        u.username.toLowerCase() === normalizedInput || 
+      user = users.find(u =>
+        u.username.toLowerCase() === normalizedInput ||
         (u.email && u.email.toLowerCase() === normalizedInput)
       );
     }
@@ -491,3 +491,5 @@ app.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
   console.log(`📂 Web interface is served from the /public folder`);
 });
+
+module.exports = app;

@@ -314,11 +314,21 @@
 
     // Initialize auth (always use backend session)
     function initLogin() {
-      // Check if already logged in
+      // Check if already logged in and it is from today
       const localSession = localStorage.getItem('mock_session');
       if (localSession) {
-        window.location.href = '/index.html';
-        return;
+        try {
+          const localUser = JSON.parse(localSession);
+          const todayStr = new Date().toLocaleDateString('en-CA');
+          if (localUser.loginDate === todayStr) {
+            window.location.href = '/index.html';
+            return;
+          } else {
+            localStorage.removeItem('mock_session');
+          }
+        } catch (_) {
+          localStorage.removeItem('mock_session');
+        }
       }
 
       // Handle login form
@@ -354,8 +364,10 @@
             return;
           }
 
-          // Save active user session
-          localStorage.setItem('mock_session', JSON.stringify(result.user));
+          // Save active user session with login date
+          const todayStr = new Date().toLocaleDateString('en-CA');
+          const sessionData = { ...result.user, loginDate: todayStr };
+          localStorage.setItem('mock_session', JSON.stringify(sessionData));
           window.location.href = '/index.html';
         } catch (err) {
           setLoading(false);

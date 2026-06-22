@@ -21,6 +21,15 @@ function initAuth() {
     }
 
     const localUser = JSON.parse(localSessionStr);
+    
+    // Check if session has expired (day-by-day reset)
+    const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+    if (!localUser.loginDate || localUser.loginDate !== todayStr) {
+      console.log(`[Auth] Session expired (Logged in: ${localUser.loginDate}, Today: ${todayStr}). Logging out...`);
+      logout();
+      return;
+    }
+
     window.AppAuth.session = { access_token: 'mock-token', user: localUser };
     window.AppAuth.profile = localUser;
     window.AppAuth.isAdmin = localUser.role === 'admin';

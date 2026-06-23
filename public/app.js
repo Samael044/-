@@ -159,7 +159,7 @@ function applyAuthUI() {
     if (manageUsersBtn) manageUsersBtn.style.display = '';
     if (deptFilterContainer) deptFilterContainer.style.display = '';
   } else if (isHR) {
-    emailLabel.textContent = 'ฝ่ายบุคคล (HR)';
+    emailLabel.textContent = 'ພະແນກບຸກຄົນ (HR)';
     roleBadge.textContent = 'HR';
     roleBadge.className = 'user-role-badge hr';
     if (manageStaffBtn) manageStaffBtn.style.display = '';
@@ -340,7 +340,7 @@ function setupExcelImport() {
     'ເດັກນ້ອຍ': 'Pediatric Department',
     'ວິເຄາະ': 'Laboratory Department',
     'ໂຊເຟີ': 'Chauffeur',
-    
+
     // Thai
     'ห้องยา': 'Pharmacy',
     'การยา': 'Pharmacy',
@@ -406,7 +406,7 @@ function setupExcelImport() {
         }
 
         const headers = jsonData[headerRowIdx].map(h => String(h || '').trim().toLowerCase());
-        
+
         // Find column indices with Thai/Lao/English fuzzy matching
         let nameIdx = headers.findIndex(h => h.includes('name') || h.includes('ຊື່') || h.includes('ชื่อ') || h.includes('ພະນັກງານ') || h.includes('พนักงาน') || h.includes('fullname') || h.includes('full name') || h.includes('staff') || h.includes('employee'));
         let deptIdx = headers.findIndex(h => h.includes('dept') || h.includes('department') || h.includes('ພະແນກ') || h.includes('แผนก') || h.includes('ตำแหน่ง') || h.includes('ຕຳແໜ່ງ') || h.includes('role') || h.includes('position'));
@@ -448,7 +448,7 @@ function setupExcelImport() {
           // Resolve department key using robust matching
           let resolvedDept = '';
           const cleanDept = rawDept.replace(/ພະແນກ|แผนก/g, '').trim().toLowerCase();
-          
+
           if (cleanDept) {
             // 1. Try exact match
             for (const [laoKey, engValue] of Object.entries(LAO_TO_ENG_DEPT)) {
@@ -520,7 +520,7 @@ function setupExcelImport() {
 
         excelPreviewTbody.innerHTML = previewHtml;
         excelPreviewWrapper.style.display = 'block';
-        
+
         // Scroll the preview wrapper into view
         excelPreviewWrapper.scrollIntoView({ behavior: 'smooth' });
 
@@ -638,7 +638,7 @@ function exportRosterToExcel() {
 
   // Generate filename with current date
   const now = new Date();
-  const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const filename = `Roster_Export_${dateStr}.xlsx`;
 
   // Write and download the Excel file
@@ -728,12 +728,12 @@ function updatePrintHeader(dates) {
 
   if (dateGenEl) {
     const now = new Date();
-    dateGenEl.textContent = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+    dateGenEl.textContent = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
   }
 
   if (periodEl && dates && dates.length > 0) {
-    const fmt = (d) => `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
-    periodEl.textContent = `ໄລຍະເວລາ: ${fmt(dates[0])} ຫາ ${fmt(dates[dates.length-1])}`;
+    const fmt = (d) => `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+    periodEl.textContent = `ໄລຍະເວລາ: ${fmt(dates[0])} ຫາ ${fmt(dates[dates.length - 1])}`;
   }
 }
 
@@ -799,17 +799,17 @@ function renderRosterGrid() {
   filteredStaff.sort((a, b) => {
     const deptA = a.department ? a.department.trim() : '';
     const deptB = b.department ? b.department.trim() : '';
-    
+
     const indexA = DEPT_SORT_ORDER.indexOf(deptA);
     const indexB = DEPT_SORT_ORDER.indexOf(deptB);
-    
+
     const valA = indexA === -1 ? 999 : indexA;
     const valB = indexB === -1 ? 999 : indexB;
-    
+
     if (valA !== valB) {
       return valA - valB;
     }
-    
+
     return a.name.localeCompare(b.name, 'lo-LA');
   });
 
@@ -942,7 +942,7 @@ async function toggleShift(staffId, dateStr) {
         alert('ທ່ານສາມາດບັນທຶກເວນໄດ້ສະເພາະວັນທີປັດຈຸບັນ (ມື້ນີ້) ເທົ່ານັ້ນ!');
         return;
       }
-      
+
       // Once ticked, cannot untick/remove for data entry and nurse roles
       const hasShift = hasActiveShift(staffId, dateStr);
       if (hasShift) {
@@ -994,7 +994,7 @@ function renderStats() {
 
   // Total payout in current scope
   let totalPayrollSum = 0;
-  
+
   // Calculate total payout by department
   const deptTotals = {
     'Pharmacy': 0,
@@ -1023,7 +1023,7 @@ function renderStats() {
   const deptPayrollGrid = document.getElementById('dept-payroll-grid');
   if (deptPayrollGrid) {
     let gridHtml = '';
-    
+
     // Sort department summary display using same custom order as in Image 2
     const DEPT_SORT_ORDER = [
       'Pharmacy',
@@ -1033,7 +1033,7 @@ function renderStats() {
       'Laboratory Department',
       'Chauffeur'
     ];
-    
+
     const sortedDepts = Object.keys(deptTotals).sort((a, b) => {
       const idxA = DEPT_SORT_ORDER.indexOf(a);
       const idxB = DEPT_SORT_ORDER.indexOf(b);
@@ -1052,7 +1052,7 @@ function renderStats() {
         </div>
       `;
     });
-    
+
     deptPayrollGrid.innerHTML = gridHtml;
   }
 
@@ -1081,17 +1081,17 @@ function renderStaffModalList() {
     const sorted = [...staffData].sort((a, b) => {
       const deptA = a.department ? a.department.trim() : '';
       const deptB = b.department ? b.department.trim() : '';
-      
+
       const indexA = DEPT_SORT_ORDER.indexOf(deptA);
       const indexB = DEPT_SORT_ORDER.indexOf(deptB);
-      
+
       const valA = indexA === -1 ? 999 : indexA;
       const valB = indexB === -1 ? 999 : indexB;
-      
+
       if (valA !== valB) {
         return valA - valB;
       }
-      
+
       return a.name.localeCompare(b.name, 'lo-LA');
     });
     sorted.forEach(staff => {

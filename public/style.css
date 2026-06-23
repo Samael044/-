@@ -263,7 +263,7 @@ body {
   background: linear-gradient(135deg, #7c3aed, #a78bfa);
 }
 
-.user-role-badge.data-entry {
+.user-role-badge.hr {
   background: linear-gradient(135deg, #f59e0b, #fbbf24);
 }
 
@@ -646,7 +646,9 @@ body {
 /* Header Date alignment */
 .roster-table th.date-cell {
   text-align: center;
+  width: 30px;
   min-width: 30px;
+  max-width: 30px;
   padding: 0.4rem 0.2rem;
 }
 
@@ -684,6 +686,9 @@ body {
   padding: 0.25rem;
   position: relative;
   user-select: none;
+  width: 30px;
+  min-width: 30px;
+  max-width: 30px;
 }
 
 .roster-table td.shift-cell:hover {

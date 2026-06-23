@@ -137,7 +137,7 @@ function applyAuthUI() {
   const manageUsersBtn = document.getElementById('open-users-modal-btn');
   const deptFilterContainer = filterDeptSelect ? filterDeptSelect.closest('.control-item') : null;
 
-  const isDataEntry = auth.profile.role === 'data_entry';
+  const isHR = auth.profile.role === 'HR';
   const isNurse = auth.profile.role === 'nurse';
 
   // Toggle Payroll and Stats card display for Nurse
@@ -158,10 +158,10 @@ function applyAuthUI() {
     if (manageStaffBtn) manageStaffBtn.style.display = '';
     if (manageUsersBtn) manageUsersBtn.style.display = '';
     if (deptFilterContainer) deptFilterContainer.style.display = '';
-  } else if (isDataEntry) {
-    emailLabel.textContent = 'ຜູ້ປ້ອນຂໍ້ມູນ (Data Entry)';
-    roleBadge.textContent = 'Data Entry';
-    roleBadge.className = 'user-role-badge data-entry';
+  } else if (isHR) {
+    emailLabel.textContent = 'ฝ่ายบุคคล (HR)';
+    roleBadge.textContent = 'HR';
+    roleBadge.className = 'user-role-badge hr';
     if (manageStaffBtn) manageStaffBtn.style.display = '';
     if (manageUsersBtn) manageUsersBtn.style.display = 'none';
     if (deptFilterContainer) deptFilterContainer.style.display = '';
@@ -656,10 +656,10 @@ function resetStaffForm() {
   submitStaffBtn.textContent = 'ບັນທຶກຂໍ້ມູນ';
   addStaffForm.querySelector('h3').textContent = '➕ ເພີ່ມບຸກຄະລາກອນໃໝ່';
 
-  // Lock and pre-select department for non-admin department users (excluding data_entry)
+  // Lock and pre-select department for non-admin department users (excluding HR)
   const auth = window.AppAuth;
-  const isDataEntry = auth && auth.profile && auth.profile.role === 'data_entry';
-  if (auth && auth.isReady && !auth.isAdmin && !isDataEntry && auth.profile && auth.profile.department) {
+  const isHR = auth && auth.profile && auth.profile.role === 'HR';
+  if (auth && auth.isReady && !auth.isAdmin && !isHR && auth.profile && auth.profile.department) {
     inputStaffDept.value = auth.profile.department;
     inputStaffDept.disabled = true;
   } else {
@@ -692,10 +692,10 @@ async function loadData() {
     staffData = await staffRes.json();
     shiftData = await shiftsRes.json();
 
-    // Filter by department if non-admin and not data_entry
+    // Filter by department if non-admin and not HR
     const auth = window.AppAuth;
-    const isDataEntry = auth && auth.profile && auth.profile.role === 'data_entry';
-    if (auth && auth.isReady && !auth.isAdmin && !isDataEntry && auth.profile && auth.profile.department) {
+    const isHR = auth && auth.profile && auth.profile.role === 'HR';
+    if (auth && auth.isReady && !auth.isAdmin && !isHR && auth.profile && auth.profile.department) {
       const userDept = auth.profile.department;
       staffData = staffData.filter(s => s.department === userDept);
     }
@@ -819,9 +819,9 @@ function renderRosterGrid() {
   // HEADER ROW 1: General categories & dates
   html += '<thead>';
   html += '  <tr>';
-  html += '    <th rowspan="2" style="width: 45px;">ລ/ດ</th>';
-  html += '    <th rowspan="2" style="width: 180px;">ຊື່ ແລະ ນາມສະກຸນ</th>';
-  html += '    <th rowspan="2" style="width: 100px;">ພະແນກ</th>';
+  html += '    <th rowspan="2" style="width: 35px;">ລ/ດ</th>';
+  html += '    <th rowspan="2" style="width: 140px;">ຊື່ ແລະ ນາມສະກຸນ</th>';
+  html += '    <th rowspan="2" style="width: 75px;">ພະແນກ</th>';
 
   // Dates
   dates.forEach(date => {
@@ -832,12 +832,12 @@ function renderRosterGrid() {
     html += `    </th>`;
   });
 
-  html += '    <th rowspan="2" class="sum-header" style="width: 70px;">ຈົບວັນຍາມ</th>';
+  html += '    <th rowspan="2" class="sum-header" style="width: 55px;">ຈົບວັນຍາມ</th>';
   if (!isNurse) {
-    html += '    <th rowspan="2" class="sum-header" style="width: 110px;">ຈ/ນ ຕໍ່ວັນ/ຍາມ</th>';
-    html += '    <th rowspan="2" class="sum-header" style="width: 120px;">ລວມ</th>';
+    html += '    <th rowspan="2" class="sum-header" style="width: 80px;">ຈ/ນ ຕໍ່ວັນ/ຍາມ</th>';
+    html += '    <th rowspan="2" class="sum-header" style="width: 90px;">ລວມ</th>';
   }
-  html += '    <th rowspan="2" style="width: 140px;">ໝາຍເຫດ</th>';
+  html += '    <th rowspan="2" style="width: 100px;">ໝາຍເຫດ</th>';
   html += '  </tr>';
 
   // HEADER ROW 2: Days of the week (S, M, T, W...)
@@ -879,14 +879,14 @@ function renderRosterGrid() {
         }
 
         const auth = window.AppAuth;
-        const isDataEntry = auth && auth.profile && auth.profile.role === 'data_entry';
+        const isHR = auth && auth.profile && auth.profile.role === 'HR';
         const isNurse = auth && auth.profile && auth.profile.role === 'nurse';
         const todayStr = formatDateISO(new Date());
         const isToday = dateStr === todayStr;
 
         let lockedClass = '';
         let titleAttr = '';
-        if ((isDataEntry || isNurse) && !isToday) {
+        if ((isHR || isNurse) && !isToday) {
           lockedClass = ' locked-cell';
           titleAttr = ' title="ສາມາດບັນທຶກໄດ້ສະເພາະມື້ນີ້ເທົ່ານັ້ນ"';
         }
@@ -934,9 +934,9 @@ function hasActiveShift(staffId, dateStr) {
 async function toggleShift(staffId, dateStr) {
   try {
     const auth = window.AppAuth;
-    const isDataEntry = auth && auth.profile && auth.profile.role === 'data_entry';
+    const isHR = auth && auth.profile && auth.profile.role === 'HR';
     const isNurse = auth && auth.profile && auth.profile.role === 'nurse';
-    if (isDataEntry || isNurse) {
+    if (isHR || isNurse) {
       const todayStr = formatDateISO(new Date());
       if (dateStr !== todayStr) {
         alert('ທ່ານສາມາດບັນທຶກເວນໄດ້ສະເພາະວັນທີປັດຈຸບັນ (ມື້ນີ້) ເທົ່ານັ້ນ!');
@@ -1143,10 +1143,10 @@ function prepareEditStaff(id) {
   submitStaffBtn.textContent = 'ອັບເດດຂໍ້ມູນ';
   addStaffForm.querySelector('h3').textContent = '✏️ ແກ້ໄຂຂໍ້ມູນບຸກຄະລາກອນ';
 
-  // Keep department locked for non-admins during edit (excluding data_entry)
+  // Keep department locked for non-admins during edit (excluding HR)
   const auth = window.AppAuth;
-  const isDataEntry = auth && auth.profile && auth.profile.role === 'data_entry';
-  if (auth && auth.isReady && !auth.isAdmin && !isDataEntry && auth.profile && auth.profile.department) {
+  const isHR = auth && auth.profile && auth.profile.role === 'HR';
+  if (auth && auth.isReady && !auth.isAdmin && !isHR && auth.profile && auth.profile.department) {
     inputStaffDept.disabled = true;
   } else {
     inputStaffDept.disabled = false;
@@ -1270,7 +1270,7 @@ async function renderUsersModalList() {
         html += `
           <tr>
             <td><strong>${user.username}</strong></td>
-            <td><span class="status-badge" style="background: rgba(255,255,255,0.04); border-color: var(--border-color);">${user.role === 'admin' ? 'Admin (ຜູ້ດູແລ)' : (user.role === 'data_entry' ? 'Data Entry (ຜູ້ປ້ອນຂໍ້ມູນ)' : (user.role === 'nurse' ? 'Nurse (ພະຍາບານ)' : user.role))}</span></td>
+            <td><span class="status-badge" style="background: rgba(255,255,255,0.04); border-color: var(--border-color);">${user.role === 'admin' ? 'Admin (ຜູ້ດູແລ)' : (user.role === 'HR' ? 'HR (ຝ່າຍບຸກຄົນ)' : (user.role === 'nurse' ? 'Nurse (ພະຍາບານ)' : user.role))}</span></td>
             <td>${DEPT_TRANSLATIONS[user.department] || user.department || '-'}</td>
             <td><span style="font-family: monospace;">${user.password}</span></td>
             <td>
